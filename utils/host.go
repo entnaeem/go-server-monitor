@@ -20,14 +20,14 @@ func GetHostinfo() (HostInfo, error) {
 		return HostInfo{}, err
 	}
 
-	release, err := os.Open("/etc/os-release")
+	file, err := os.Open("/etc/os-release")
 	if err != nil {
 		return HostInfo{}, err
 	}
-	defer release.Close()
+	defer file.Close()
 
 	var name, version string
-	scanner := bufio.NewScanner(release)
+	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "NAME=") {
@@ -41,9 +41,9 @@ func GetHostinfo() (HostInfo, error) {
 	if err := scanner.Err(); err != nil {
 		return HostInfo{}, err
 	}
-	osname := name + " " + version
+	osName := name + " " + version
 
-	osarch := runtime.GOARCH
+	osArch := runtime.GOARCH
 
 	kernelVersion, err := os.ReadFile("/proc/sys/kernel/osrelease")
 	if err != nil {
@@ -52,8 +52,8 @@ func GetHostinfo() (HostInfo, error) {
 
 	return HostInfo{
 		Hostname:      host,
-		OSName:        osname,
-		OSArch:        osarch,
+		OSName:        osName,
+		OSArch:        osArch,
 		KernelVersion: strings.TrimSpace(string(kernelVersion)),
 	}, nil
 }
